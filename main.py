@@ -5,7 +5,7 @@ from random import randrange
 '''
 "altamente segura-0(RouteSafety0)", "segura-1(RouteSafety1)" , "aceitável-2(RouteSafety2)"
 '''
-gi
+
 #Route is like a Interface in Java
 class RouteSafety:
     _levels = {0: "HighlySafe", 1: "Safe", 2: "Acceptable"}
