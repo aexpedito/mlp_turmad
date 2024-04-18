@@ -5,9 +5,9 @@ from random import randrange
 '''
 "altamente segura-0(RouteSafety0)", "segura-1(RouteSafety1)" , "aceitável-2(RouteSafety2)"
 '''
-
+gi
 #Route is like a Interface in Java
-class Route:
+class RouteSafety:
     _levels = {0: "HighlySafe", 1: "Safe", 2: "Acceptable"}
     def get_route_safety_level(self):
         raise NotImplementedError
@@ -15,7 +15,7 @@ class Route:
     def move(self):
         raise NotImplementedError
 
-class RouteSafety0(Route):
+class RouteSafety0(RouteSafety):
 
     _instance = None
 
@@ -34,7 +34,7 @@ class RouteSafety0(Route):
     def move(self):
         return "Safety Level {}".format(super()._levels[0])
 
-class RouteSafety1(Route):
+class RouteSafety1(RouteSafety):
 
     _instance = None
 
@@ -53,7 +53,7 @@ class RouteSafety1(Route):
     def move(self):
         return "Safety Level {}".format(super()._levels[1])
 
-class RouteSafety2(Route):
+class RouteSafety2(RouteSafety):
 
     _instance = None
 
@@ -71,6 +71,28 @@ class RouteSafety2(Route):
 
     def move(self):
         return "Safety Level {}".format(super()._levels[2])
+
+class Route:
+
+    _name = None
+    _route_safety = None
+    def __init__(self, name, route_safety):
+        self._name = name
+        self._route_safety = route_safety
+
+    def get_name(self):
+        return self._name
+
+    def get_route_safety(self):
+        return self._route_safety.get_route_safety_level()
+
+    def set_route_safety(self, route_safety):
+        self._route_safety = route_safety
+
+    def move(self):
+        self._route_safety.move()
+
+
 class Walker():
 
     _name = None
@@ -80,11 +102,16 @@ class Walker():
         self._name = name
         self._route = route
 
-    def set_route(self, route):
-        self._route = route
+    def set_route(self, current_safety):
+        if current_safety == 0:
+            self._route.set_route_safety(RouteSafety0())
+        elif current_safety == 1:
+            self._route.set_route_safety(RouteSafety1())
+        else:
+            self._route.set_route_safety(RouteSafety2())
 
     def print_current_route(self):
-        print("Walker Name: {}; Current: {}".format(self._name, self._route.get_route_safety_level()))
+        print("Walker: {}; Current: {} {}".format(self._name, self._route.get_name(), self._route.get_route_safety()))
 
     def move(self):
         #move according to self._route assigned
@@ -93,28 +120,23 @@ class Walker():
 if __name__ == '__main__':
     print("Starting navigation")
 
-    safety0 = RouteSafety0()
-    safety1 = RouteSafety1()
-    safety2 = RouteSafety2()
+    route0 = Route("Route0", RouteSafety0())
+    route1 = Route("Route1", RouteSafety1())
+    route2 = Route("Route2", RouteSafety2())
 
     walkers = []
-    walker1 = Walker("Walker1", safety0)
+    walker0 = Walker("Walker0", route0)
+    walkers.append(walker0)
+    walker1 = Walker("Walker1", route1)
     walkers.append(walker1)
-    walker2 = Walker("Walker2", safety0)
+    walker2 = Walker("Walker2", route2)
     walkers.append(walker2)
-    walker3 = Walker("Walker3", safety0)
-    walkers.append(walker3)
 
     while (True):
         #set route safety for each walker,
         for walker in walkers:
-            current_safety = randrange(3)
-            if current_safety == 0:
-                walker.set_route(safety0)
-            elif current_safety == 1:
-                walker.set_route(safety1)
-            else:
-                walker.set_route(safety2)
+            current_safety = randrange(3) #random route safety, 0=HighlySafe, 1=Safe, 2=Acceptable
+            walker.set_route(current_safety)
 
         for walker in walkers:
             walker.move()
